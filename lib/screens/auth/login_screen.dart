@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noted_flutter/screens/auth/forgot_password_screen.dart';
 import 'package:noted_flutter/screens/auth/signup_screen.dart';
 import 'package:noted_flutter/services/auth_services.dart';
 
@@ -14,7 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
 
   final auth = AuthServices();
-  
+
   @override
   void dispose() {
     emailController.dispose();
@@ -48,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     hintText: "Email",
                     enabledBorder: borderStyle,
-                    focusedBorder: borderStyle
+                    focusedBorder: borderStyle,
                   ),
                 ),
 
@@ -63,21 +64,33 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     hintText: "Password",
                     enabledBorder: borderStyle,
-                    focusedBorder: borderStyle
+                    focusedBorder: borderStyle,
                   ),
                 ),
                 SizedBox(height: 15),
-                Text("Forgot Password?"),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ForgotPasswordScreen(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    "Forgot Password?",
+                    style: TextStyle(decoration: TextDecoration.underline),
+                  ),
+                ),
                 SizedBox(height: 15),
                 ElevatedButton(
                   onPressed: () {
                     String email = emailController.text.trim();
                     String password = passwordController.text.trim();
-          
+
                     if (email.isEmpty || password.isEmpty) return;
-          
+
                     auth.userLogin(email, password);
-          
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(double.infinity, 56),
@@ -85,9 +98,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: Text("Login", style: TextStyle(color: Colors.white)),
                 ),
-          
+
                 SizedBox(height: 30),
-          
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -106,9 +119,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-          
+
                 SizedBox(height: 30),
-          
+
                 ElevatedButton(
                   onPressed: () {
                     auth.googleSignin();
@@ -130,25 +143,33 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-          
-                SizedBox(height: 15,),
-          
+
+                SizedBox(height: 15),
+
                 Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Don't have an account?"),
-                      SizedBox(width: 5),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => SignupScreen(),));
-                        },
-                        child: Text(
-                          "Signup",
-                          style: TextStyle(color: Color(0xFF173200),fontWeight: FontWeight.w500),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Don't have an account?"),
+                    SizedBox(width: 5),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignupScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "Signup",
+                        style: TextStyle(
+                          color: Color(0xFF173200),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -159,6 +180,6 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 final borderStyle = OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide(color: Color(0xFF173200), width: 2),
-                    );
+  borderRadius: BorderRadius.circular(30),
+  borderSide: BorderSide(color: Color(0xFF173200), width: 2),
+);
