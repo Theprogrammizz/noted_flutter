@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_flutter/providers/auth/auth_provider.dart';
 import 'package:noted_flutter/screens/auth/forgot_password_screen.dart';
 import 'package:noted_flutter/screens/auth/signup_screen.dart';
+import 'package:noted_flutter/screens/main/home_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -27,6 +28,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+
+    ref.listen(authProvider, (previous, next) {
+      next.whenOrNull(
+        data: (user) {
+          if (user != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Login Successful"),
+                backgroundColor: Color(0xFF173200),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+              (route) => false,
+            );
+          }
+        },
+
+        error: (err, _) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(err.toString()),
+              backgroundColor: Colors.red.shade300,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        },
+      );
+    });
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -72,7 +105,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 SizedBox(height: 15),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ForgotPasswordScreen(),
@@ -192,7 +225,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     SizedBox(width: 5),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => SignupScreen(),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_flutter/providers/auth/auth_provider.dart';
+import 'package:noted_flutter/screens/auth/login_screen.dart';
+import 'package:noted_flutter/screens/main/home_screen.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
@@ -26,15 +28,46 @@ class _LoginScreenState extends ConsumerState<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+
+    ref.listen(authProvider, (previous, next) {
+      next.whenOrNull(
+        data: (user) {
+          if (user != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Login Successful"),
+                backgroundColor: Color(0xFF173200),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+              (route) => false,
+            );
+          }
+        },
+
+        error: (err, _) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(err.toString()),
+              backgroundColor: Colors.red.shade300,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        },
+      );
+    });
+
     return Scaffold(
-      appBar: AppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(25.0),
             child: Column(
               children: [
-                SizedBox(height: 20),
+                SizedBox(height: 50),
                 Text(
                   "Signup",
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
@@ -197,7 +230,12 @@ class _LoginScreenState extends ConsumerState<SignupScreen> {
                     SizedBox(width: 5),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginScreen(),
+                          ),
+                        );
                       },
                       child: Text(
                         "Login",

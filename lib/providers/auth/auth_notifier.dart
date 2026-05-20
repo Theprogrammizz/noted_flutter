@@ -40,4 +40,8 @@ class AuthNotifier extends AsyncNotifier<User?> {
       return null;
     });
   }
+
+  Future<void> signUserOut() async {
+    await _services.signUserOut();
+  }
 }

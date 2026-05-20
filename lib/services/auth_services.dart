@@ -59,4 +59,9 @@ class AuthServices {
   Future<void> forgotPassword(String email) async {
     await supabase.auth.resetPasswordForEmail(email);
   }
+
+  Future<void> signUserOut() async{
+    await supabase.auth.signOut();
+  }
 }
+
