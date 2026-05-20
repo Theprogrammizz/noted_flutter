@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:noted_flutter/services/auth_services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_flutter/providers/auth/auth_provider.dart';
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _LoginScreenState();
+  ConsumerState<SignupScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<SignupScreen> {
+class _LoginScreenState extends ConsumerState<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final passConController = TextEditingController();
+  bool isGoogleSignin = false;
 
-  final auth = AuthServices();
-  
   @override
   void dispose() {
     emailController.dispose();
@@ -25,6 +25,7 @@ class _LoginScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -87,16 +88,20 @@ class _LoginScreenState extends State<SignupScreen> {
                 SizedBox(height: 15),
 
                 ElevatedButton(
-                  onPressed: () {
-                    String email = emailController.text.trim();
-                    String password = passwordController.text.trim();
-                    String conPassword= passConController.text.trim();
+                  onPressed: authState.isLoading
+                      ? null
+                      : () {
+                          String email = emailController.text.trim();
+                          String password = passwordController.text.trim();
+                          String conPassword = passConController.text.trim();
 
-                    if (email.isEmpty || password.isEmpty) return;
-                    if (password != conPassword) return;
+                          if (email.isEmpty || password.isEmpty) return;
+                          if (password != conPassword) return;
 
-                    auth.userSignup(email, password);
-                  },
+                          ref
+                              .watch(authProvider.notifier)
+                              .signup(email, password);
+                        },
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(double.infinity, 56),
                     backgroundColor: Color(0xFF173200),
@@ -128,25 +133,36 @@ class _LoginScreenState extends State<SignupScreen> {
                 SizedBox(height: 30),
 
                 ElevatedButton(
-                  onPressed: () {
-                    auth.googleSignin();
-                  },
+                  onPressed: isGoogleSignin
+                      ? null
+                      : () {
+                          ref.watch(authProvider.notifier).googleSignIn();
+                        },
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(double.infinity, 56),
                     elevation: 0,
                     backgroundColor: Colors.grey.shade300,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('images/google.png', height: 24),
-                      SizedBox(width: 15),
-                      Text(
-                        "Continue with Google",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ],
-                  ),
+                  child: isGoogleSignin
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset('images/google.png', height: 24),
+                            SizedBox(width: 15),
+                            Text(
+                              "Continue with Google",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
                 ),
 
                 SizedBox(height: 15),
@@ -158,9 +174,7 @@ class _LoginScreenState extends State<SignupScreen> {
                     SizedBox(width: 5),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pop(
-                          context
-                        );
+                        Navigator.pop(context);
                       },
                       child: Text(
                         "Login",

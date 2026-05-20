@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_flutter/providers/auth/auth_provider.dart';
 import 'package:noted_flutter/screens/auth/forgot_password_screen.dart';
 import 'package:noted_flutter/screens/auth/signup_screen.dart';
-import 'package:noted_flutter/services/auth_services.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  final auth = AuthServices();
+  bool isGoogleSignin = false;
 
   @override
   void dispose() {
@@ -25,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -84,19 +86,32 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 15),
                 ElevatedButton(
-                  onPressed: () {
-                    String email = emailController.text.trim();
-                    String password = passwordController.text.trim();
+                  onPressed: authState.isLoading
+                      ? null
+                      : () {
+                          String email = emailController.text.trim();
+                          String password = passwordController.text.trim();
 
-                    if (email.isEmpty || password.isEmpty) return;
+                          if (email.isEmpty || password.isEmpty) return;
 
-                    auth.userLogin(email, password);
-                  },
+                          ref
+                              .read(authProvider.notifier)
+                              .login(email, password);
+                        },
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(double.infinity, 56),
                     backgroundColor: Color(0xFF173200),
                   ),
-                  child: Text("Login", style: TextStyle(color: Colors.white)),
+                  child: authState.isLoading
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text("Login", style: TextStyle(color: Colors.white)),
                 ),
 
                 SizedBox(height: 30),
@@ -123,25 +138,49 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 30),
 
                 ElevatedButton(
-                  onPressed: () {
-                    auth.googleSignin();
-                  },
+                  onPressed: isGoogleSignin
+                      ? null
+                      : () async {
+                          setState(() {
+                            isGoogleSignin = true;
+                          });
+                          try {
+                            await ref
+                                .read(authProvider.notifier)
+                                .googleSignIn();
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                isGoogleSignin = false;
+                              });
+                            }
+                          }
+                        },
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(double.infinity, 56),
                     elevation: 0,
                     backgroundColor: Colors.grey.shade300,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('images/google.png', height: 24),
-                      SizedBox(width: 15),
-                      Text(
-                        "Continue with Google",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ],
-                  ),
+                  child: isGoogleSignin
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset('images/google.png', height: 24),
+                            SizedBox(width: 15),
+                            Text(
+                              "Continue with Google",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
                 ),
 
                 SizedBox(height: 15),

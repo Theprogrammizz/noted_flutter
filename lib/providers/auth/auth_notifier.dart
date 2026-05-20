@@ -28,11 +28,8 @@ class AuthNotifier extends AsyncNotifier<User?> {
   }
 
   Future<void> googleSignIn() async{
-    state = const AsyncLoading();
-
-    state = await AsyncValue.guard(() async{
-      return await _services.googleSignin();
-    });
+    final user = await _services.googleSignin();
+    state =  AsyncData(user);
   }
 
   Future<void> forgotPassword(String email) async {
