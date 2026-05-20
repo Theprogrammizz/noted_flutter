@@ -28,7 +28,16 @@ class AuthServices {
       clientId: dotenv.env['ANDROID_CLIENT'],
     );
 
-    final GoogleSignInAccount account = await signin.authenticate();
+    final GoogleSignInAccount account;
+
+    try {
+      account = await signin.authenticate();
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        return null;
+      }
+      rethrow;
+    }
 
     final idToken = account.authentication.idToken ?? '';
     final auth =

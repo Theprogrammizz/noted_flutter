@@ -106,7 +106,16 @@ class _LoginScreenState extends ConsumerState<SignupScreen> {
                     minimumSize: Size(double.infinity, 56),
                     backgroundColor: Color(0xFF173200),
                   ),
-                  child: Text("Signup", style: TextStyle(color: Colors.white)),
+                  child: authState.isLoading
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text("Signup", style: TextStyle(color: Colors.white)),
                 ),
 
                 SizedBox(height: 30),
@@ -135,8 +144,22 @@ class _LoginScreenState extends ConsumerState<SignupScreen> {
                 ElevatedButton(
                   onPressed: isGoogleSignin
                       ? null
-                      : () {
-                          ref.watch(authProvider.notifier).googleSignIn();
+                      : () async {
+                          setState(() {
+                            isGoogleSignin = true;
+                          });
+
+                          try {
+                            await ref
+                                .watch(authProvider.notifier)
+                                .googleSignIn();
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                isGoogleSignin = false;
+                              });
+                            }
+                          }
                         },
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(double.infinity, 56),
