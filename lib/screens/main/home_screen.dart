@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:noted_flutter/providers/notes/notes_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -17,7 +18,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return notesStream.when(
       data: (data) {
         return Scaffold(
-          appBar: AppBar(title: Text("Notes")),
+          appBar: AppBar(title: Text("Notes", style: GoogleFonts.ubuntu(),), centerTitle: true,),
           body: Padding(
             padding: const EdgeInsets.all(12),
 
@@ -39,7 +40,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return Scaffold(body: Center(child: Text(error.toString()),));
       },
       loading: () {
-        return Scaffold(body: Center(child: CircularProgressIndicator()));
+        return Scaffold(body: Center(child: CircularProgressIndicator(color: Color(0xFF173200),)));
       },
     );
   }
@@ -64,9 +65,9 @@ class NoteCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(text, style: const TextStyle(fontSize: 16, color: Colors.white)),
+          Text(text, style: GoogleFonts.ubuntu(fontSize: 18, color: Colors.white)),
           SizedBox(height: 5,),
-          Text(body, style: const TextStyle(fontSize: 14, color: Colors.white)),
+          Text(body,style: GoogleFonts.ubuntu(fontSize: 14, color: Colors.white)),
         ],
       ),
     );

@@ -14,7 +14,7 @@ class _AddNotesScreenState extends ConsumerState<AddNotesScreen> {
   final bodyController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final notesState = ref.watch(notesProvider);
+    // final notesState = ref.watch(notesProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text("Add Note"),
