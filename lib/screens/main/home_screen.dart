@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:noted_flutter/providers/notes/notes_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -10,41 +11,45 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  final List<String> notes = [
-    "Short note, this is it honey we the world gang",
-    "Very very long note with lots of text inside it to make the card taller",
-    "Todo list",
-    "Another random note",
-    "Flutter is amazing",
-    "Keep-style UI",
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Notes")),
-      body: Padding(
-        padding: const EdgeInsets.all(12),
+    final notesStream = ref.watch(notesStreamProvider);
+    return notesStream.when(
+      data: (data) {
+        return Scaffold(
+          appBar: AppBar(title: Text("Notes")),
+          body: Padding(
+            padding: const EdgeInsets.all(12),
 
-        child: MasonryGridView.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 5,
-          crossAxisSpacing: 5,
-          itemCount: notes.length,
+            child: MasonryGridView.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
+              itemCount: data.length,
 
-          itemBuilder: (context, index) {
-            return NoteCard(text: notes[index]);
-          },
-        ),
-      ),
+              itemBuilder: (context, index) {
+                final note = data[index];
+                return NoteCard(text: note.title, body: note.body,);
+              },
+            ),
+          ),
+        );
+      },
+      error: (error, _) {
+        return Scaffold(body: Center(child: Text(error.toString()),));
+      },
+      loading: () {
+        return Scaffold(body: Center(child: CircularProgressIndicator()));
+      },
     );
   }
 }
 
 class NoteCard extends StatelessWidget {
   final String text;
+  final String body;
 
-  const NoteCard({super.key, required this.text});
+  const NoteCard({super.key, required this.text, required this.body});
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +57,18 @@ class NoteCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
 
       decoration: BoxDecoration(
-        color: Colors.orange.shade100,
-        borderRadius: BorderRadius.circular(18),
+        color: const Color.fromARGB(255, 54, 124, 57),
+        borderRadius: BorderRadius.circular(12),
       ),
 
-      child: Text(text, style: const TextStyle(fontSize: 16)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(text, style: const TextStyle(fontSize: 16, color: Colors.white)),
+          SizedBox(height: 5,),
+          Text(body, style: const TextStyle(fontSize: 14, color: Colors.white)),
+        ],
+      ),
     );
   }
 }

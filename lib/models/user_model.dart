@@ -2,12 +2,12 @@ class UserModel {
   int id;
   String name;
   String email;
-  String profileImg;
+  String profilePath;
 
   UserModel({
     required this.id,
     required this.name,
     required this.email,
-    required this.profileImg,
+    required this.profilePath,
   });
 }
