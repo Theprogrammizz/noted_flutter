@@ -1,13 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_flutter/providers/auth/auth_provider.dart';
+import 'package:noted_flutter/screens/auth/login_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  @override
   Widget build(BuildContext context) {
+     final authState = ref.watch(authProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text("Profile Screen"),
+        actions: [
+          IconButton(
+            onPressed: authState.isLoading
+                ? null
+                : () async{
+                    await ref.read(authProvider.notifier).signUserOut();
+                    if (context.mounted) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        (route) => false,
+                      );
+                    }
+                  },
+            icon: Icon(Icons.logout),
+          ),
+        ],
       ),
     );
   }

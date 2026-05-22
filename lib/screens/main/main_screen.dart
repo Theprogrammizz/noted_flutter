@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:noted_flutter/providers/nav/nav_provider.dart';
+import 'package:noted_flutter/screens/main/add_notes_screen.dart';
 import 'package:noted_flutter/screens/main/home_screen.dart';
 import 'package:noted_flutter/screens/main/profile_screen.dart';
 
@@ -43,7 +44,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
       floatingActionButton: currentIndex == 0
           ? FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => AddNotesScreen(),));
+              },
               backgroundColor: Color(0xFF173200),
               elevation: 0,
               child: Icon(Icons.add, color: Colors.white),
