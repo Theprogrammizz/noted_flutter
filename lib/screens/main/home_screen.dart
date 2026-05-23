@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:noted_flutter/providers/notes/notes_provider.dart';
+import 'package:noted_flutter/screens/main/update_screen.dart';
+import 'package:noted_flutter/utils/utils.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -12,13 +14,19 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+
+  
+
   @override
   Widget build(BuildContext context) {
     final notesStream = ref.watch(notesStreamProvider);
     return notesStream.when(
       data: (data) {
         return Scaffold(
-          appBar: AppBar(title: Text("Notes", style: GoogleFonts.ubuntu(),), centerTitle: true,),
+          appBar: AppBar(
+            title: Text("Noted", style: GoogleFonts.ubuntu()),
+            centerTitle: true,
+          ),
           body: Padding(
             padding: const EdgeInsets.all(12),
 
@@ -30,17 +38,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
               itemBuilder: (context, index) {
                 final note = data[index];
-                return NoteCard(text: note.title, body: note.body,);
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return UpdateScreen(note: note);
+                        },
+                      ),
+                    );
+                  },
+                  onLongPress: () {dialogBox(context: context);},
+                  child: NoteCard(text: note.title, body: note.body),
+                );
               },
             ),
           ),
         );
       },
       error: (error, _) {
-        return Scaffold(body: Center(child: Text(error.toString()),));
+        return Scaffold(body: Center(child: Text(error.toString())));
       },
       loading: () {
-        return Scaffold(body: Center(child: CircularProgressIndicator(color: Color(0xFF173200),)));
+        return Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(color: Color(0xFF173200)),
+          ),
+        );
       },
     );
   }
@@ -65,9 +90,15 @@ class NoteCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(text, style: GoogleFonts.ubuntu(fontSize: 18, color: Colors.white)),
-          SizedBox(height: 5,),
-          Text(body,style: GoogleFonts.ubuntu(fontSize: 14, color: Colors.white)),
+          Text(
+            text,
+            style: GoogleFonts.ubuntu(fontSize: 18, color: Colors.white),
+          ),
+          SizedBox(height: 5),
+          Text(
+            body,
+            style: GoogleFonts.ubuntu(fontSize: 14, color: Colors.white),
+          ),
         ],
       ),
     );

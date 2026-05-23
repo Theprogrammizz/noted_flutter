@@ -1,0 +1,95 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_flutter/models/notes_model.dart';
+import 'package:noted_flutter/utils/utils.dart';
+
+class UpdateScreen extends ConsumerStatefulWidget {
+  final NotesModel note;
+  const UpdateScreen({super.key, required this.note});
+
+  @override
+  ConsumerState<UpdateScreen> createState() => _UpdateScreenState();
+}
+
+class _UpdateScreenState extends ConsumerState<UpdateScreen> {
+  final bodyController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    bodyController.text = widget.note.body;
+  }
+
+  @override
+  void dispose() {
+    bodyController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.note.title),
+        centerTitle: true,
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == "edit") {
+                final body = bodyController.text.trim();
+
+                if (body.isEmpty) return;
+
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              }
+
+              if (value == "delete") {
+                dialogBox(context: context);
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: "edit",
+                child: ListTile(leading: Icon(Icons.edit), title: Text("Edit")),
+              ),
+              PopupMenuItem(
+                value: "delete",
+                child: ListTile(
+                  leading: Icon(Icons.delete),
+                  title: Text("Delete"),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: bodyController,
+                  onTapOutside: (event) {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  },
+                  keyboardType: TextInputType.multiline,
+                  textAlignVertical: TextAlignVertical.top,
+                  maxLines: null,
+                  expands: true,
+                  decoration: InputDecoration(
+                    hintText: "Write your mind.....",
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
