@@ -1,43 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:noted_flutter/models/notes_model.dart';
 import 'package:noted_flutter/providers/notes/notes_provider.dart';
 
-class AddNotesScreen extends ConsumerStatefulWidget {
-  const AddNotesScreen({super.key});
+class UpdateNoteScreen extends ConsumerStatefulWidget {
+  final NotesModel note;
+  const UpdateNoteScreen({super.key, required this.note});
 
   @override
-  ConsumerState<AddNotesScreen> createState() => _AddNotesScreenState();
+  ConsumerState<UpdateNoteScreen> createState() => _UpdateScreenState();
 }
 
-class _AddNotesScreenState extends ConsumerState<AddNotesScreen> {
-  final titleController = TextEditingController();
+class _UpdateScreenState extends ConsumerState<UpdateNoteScreen> {
   final bodyController = TextEditingController();
+  final titleController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    bodyController.text = widget.note.body;
+    titleController.text = widget.note.title;
+  }
+
+  @override
+  void dispose() {
+    bodyController.dispose();
+    titleController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // final notesState = ref.watch(notesProvider);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Note"),
+        title: Text("Update Note", style: GoogleFonts.ubuntu(),),
+        centerTitle: true,
         actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              onPressed: () async {
-                final title = titleController.text.trim();
+          IconButton(onPressed: () async{
+             final title = titleController.text.trim();
                 final body = bodyController.text.trim();
 
                 if (title.isEmpty || body.isEmpty) return;
 
-                await ref.read(notesProvider.notifier).createNotes(title, body);
+                await ref.read(notesServiceProvider).updateNote(widget.note.id, title, body);
 
                 if (context.mounted) {
                   Navigator.pop(context);
+                  Navigator.pop(context);
                 }
-              },
-              icon: Icon(Icons.check_rounded),
-            ),
-          ),
+          }, icon: Icon(Icons.check))
         ],
       ),
       body: SafeArea(
@@ -45,7 +57,6 @@ class _AddNotesScreenState extends ConsumerState<AddNotesScreen> {
           padding: const EdgeInsets.all(25.0),
           child: Column(
             children: [
-              SizedBox(height: 10),
               TextField(
                 style: GoogleFonts.ubuntu(fontSize: 20),
                 controller: titleController,
@@ -54,11 +65,10 @@ class _AddNotesScreenState extends ConsumerState<AddNotesScreen> {
                 },
                 decoration: InputDecoration(hintText: "Title"),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10,),
               Expanded(
                 child: TextField(
                   controller: bodyController,
-                  style: GoogleFonts.ubuntu(),
                   onTapOutside: (event) {
                     FocusManager.instance.primaryFocus?.unfocus();
                   },
@@ -66,6 +76,7 @@ class _AddNotesScreenState extends ConsumerState<AddNotesScreen> {
                   textAlignVertical: TextAlignVertical.top,
                   maxLines: null,
                   expands: true,
+                  style: GoogleFonts.ubuntu(),
                   decoration: InputDecoration(
                     hintText: "Write your mind.....",
                     border: InputBorder.none,

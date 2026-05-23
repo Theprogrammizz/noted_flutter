@@ -29,4 +29,8 @@ class NotesServices {
   Future<void> deleteNote(int id) async{
     await supabase.from("notes").delete().eq("id", id);
   }
+
+  Future<void> updateNote(int id, String title, String body) async{
+    await supabase.from("notes").update({"title" : title, "body" : body}).eq("id", id);
+  }
 }
