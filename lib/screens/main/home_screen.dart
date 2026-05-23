@@ -4,7 +4,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:noted_flutter/providers/notes/notes_provider.dart';
 import 'package:noted_flutter/screens/main/update_screen.dart';
-import 'package:noted_flutter/utils/utils.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -49,7 +48,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     );
                   },
-                  onLongPress: () {dialogBox(context: context);},
+                  onLongPress: () {},
                   child: NoteCard(text: note.title, body: note.body),
                 );
               },

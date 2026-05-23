@@ -25,4 +25,8 @@ class NotesServices {
           }).toList();
         });
   }
+
+  Future<void> deleteNote(int id) async{
+    await supabase.from("notes").delete().eq("id", id);
+  }
 }

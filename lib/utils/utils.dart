@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void dialogBox({required BuildContext context}) {
+void dialogBox({required BuildContext context, required VoidCallback onTap}) {
   showDialog(
     context: context,
     builder: (dialogContext) {
@@ -23,7 +23,10 @@ void dialogBox({required BuildContext context}) {
             ),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              onTap();
+              Navigator.of(context).pop();
+            },
             style: ElevatedButton.styleFrom(
               elevation: 0,
               backgroundColor: Colors.red.shade300,

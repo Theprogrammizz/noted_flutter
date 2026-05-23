@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:noted_flutter/models/notes_model.dart';
+import 'package:noted_flutter/providers/notes/notes_provider.dart';
 import 'package:noted_flutter/utils/utils.dart';
 
 class UpdateScreen extends ConsumerStatefulWidget {
@@ -30,7 +32,7 @@ class _UpdateScreenState extends ConsumerState<UpdateScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.note.title),
+        title: Text(widget.note.title, style: GoogleFonts.ubuntu(),),
         centerTitle: true,
         actions: [
           PopupMenuButton<String>(
@@ -46,7 +48,18 @@ class _UpdateScreenState extends ConsumerState<UpdateScreen> {
               }
 
               if (value == "delete") {
-                dialogBox(context: context);
+                dialogBox(
+                  context: context,
+                  onTap: () async {
+                    await ref
+                        .read(notesServiceProvider)
+                        .deleteNote(widget.note.id);
+
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                );
               }
             },
             itemBuilder: (context) => [
@@ -79,6 +92,7 @@ class _UpdateScreenState extends ConsumerState<UpdateScreen> {
                   keyboardType: TextInputType.multiline,
                   textAlignVertical: TextAlignVertical.top,
                   maxLines: null,
+                  readOnly: true,
                   expands: true,
                   decoration: InputDecoration(
                     hintText: "Write your mind.....",
